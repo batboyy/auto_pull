@@ -1,0 +1,83 @@
+apt-get update
+apt-get upgrade
+sudo apt install wordpress php libapache2-mod-php mysql-server php-mysql
+    apt-get install php7.0-mysql
+     apt-get install php7.2-mysql
+     apt-get update
+     apt-get install php-mysql
+     apt-get update && apt-get install php7.2-mysql
+apt-get install apache2
+systemctl enable apache2
+systemctl status apache2
+apt install php php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip
+php -v
+apt install mysql-server
+mysql_secure_installation
+mysql -u root -p
+CREATE DATABASE wordpress;
+CREATE USER 'wpuser'@'localhost' IDENTIFIED BY 'pass@321';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'localhost' IDENTIFIED BY 'pass@321';
+FLUSH PRIVILEGES;
+exit;
+mysql -u eselvoer_pharma -ppharmamandu.com1 eselvoer_pharmacy < eselvoer_pharmacy.sql ;
+cd /var/www/html
+wget -c http://wordpress.org/latest.zip
+unzip latest.zip
+chown -R www-data:www-data wordpress
+rm latest.zip
+cd /var/www/html/wordpress
+mv wp-config-sample.php wp-config.php
+nano wp-config.php
+nano /etc/apache2/sites-available/your_domain.com.conf
+
+
+<VirtualHost *:80>
+
+ServerAdmin wordpress
+ServerName 54.164.199.37
+ServerAlias 54.164.199.37
+DocumentRoot /var/www/html/wordpress
+
+<Directory /var/www/html/wordpress>
+     Options Indexes FollowSymLinks
+     AllowOverride All
+     Require all granted
+</Directory>
+
+ErrorLog ${APACHE_LOG_DIR}/your_domain.com_error.log 
+CustomLog ${APACHE_LOG_DIR}/your_domain.com_access.log combined 
+</VirtualHost>
+
+
+
+a2dissite 00.default.conf
+systemctl reload service
+a2ensite wordpress.conf
+systemctl reload service
+
+a2enmod rewrite
+service apache2 restart
+
+http:// ip 
+
+ready now
+
+ apt-get update
+    apt-get install php7.0-mysql
+     apt-get install php7.2-mysql
+     apt-get update
+     apt-get install php-mysql
+     apt-get update && apt-get install php7.2-mysql
+     cd /var/ww/html/wordpress
+     cd /var/www/html/wordpress
+     ls
+     php -v
+     apt-get install php7.0-mysql
+     apt-get install php7.2-mysql
+     service apache2 restart
+
+select option_value,option_name from wp_options where  option_id = 1 ;
+52.71.39.25
+UPDATE wp_options SET option_value = 'http://52.71.39.25' where option_id = 1 ;
+
+UPDATE wp_options SET option_value = 'http://52.71.39.25' where option_id = 2 ;

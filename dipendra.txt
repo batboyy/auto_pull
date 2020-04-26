@@ -1,0 +1,219 @@
+import json
+import random
+import boto3
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+sesclient=boto3.client('ses', region_name="eu-west-1")
+client = boto3.client('dynamodb')
+sns = boto3.resource('sns')
+topic = sns.Topic('arn:aws:sns:us-east-1:031342435657:startup_notifications')
+topic_arn = 'arn:aws:sns:us-east-1:031342435657:startup_notifications'
+
+
+
+def lambda_handler(event, context):
+ #   randomInteger=str(random.randint(1,999999999))
+    
+    domain_email = event['Domain_email']
+    org_name = event['Org_name']
+    contact_person_name = event['Contact_person_name']
+    contact_number = event['Contact_number']
+    designation = event['Designation']
+    website = event['Website']
+    ml_used = event['Ml_used']
+    employee_size = event['Employee_sizes']
+    launch_date = event['Launch_date']
+    product_list = event['Product_list']
+    description = event['Description']
+    founded_date = event['Founded_date']
+    industry_type = event['Industry_type']
+    target_customers = event['Target_customers']
+    # return(domain_email,org_name,contact_person_name,contact_number,designation,website,ml_used,employee_size,launch_date,product_list,description,founded_date,industry_type,target_customers,)
+    
+
+    
+    body='''
+        <h3>
+        What is your company's website? 
+        </h3>
+        <h4>
+        <b>
+        {website}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        Tell us what you are building?
+        </h3>
+        <h4>
+        <b>
+        {description}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        When was your company founded?
+        </h3>
+        <h4>
+        <b>
+        {founded_date}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        What industry or market best describes your company?
+        </h3>
+        <h4>
+        <b>
+        {industry_type}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        Who are your primary target customers? 
+        </h3>
+        <h4>
+        <b>
+        {target_customers}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        How many employees do you currently have? 
+
+        </h3>
+        <h4>
+        <b>
+        {employee_size}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        When is your product planned to be launched?
+        </h3>
+        <h4>
+        <b>
+        {launch_date}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        How do (will) customers interact with your product?
+        </h3>
+        <h4>
+        <b>
+        {product_list}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        Does your product use AI and machine learning technologies?
+        </h3>
+        <h4>
+        <b>
+        {ml_used}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        Your company domain email id? 
+        </h3>
+        <h4>
+        <b>
+        {domain_email}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        Organization Name 
+        </h3>
+        <h4>
+        <b>
+        {org_name}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        Contact Person Name 
+        </h3>
+        <h4>
+        <b>
+        {contact_person_name}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        Contact Number
+        </h3>
+        <h4>
+        <b>
+        {contact_number}
+        </b>
+        </h4><br/>
+        
+        <h3>
+        Designation 
+        </h3>
+        <h4>
+        <b>
+        {designation}
+        </b>
+        </h4><br/>
+    '''.format(**locals())
+    
+    try:
+        response = sesclient.send_email(
+            Destination={
+                'ToAddresses': ['shrawan@genese.com.np','dipendra@genese.com.np','bipasna@genese.com.np','babin@genesesolution.com'],
+            },
+            Message={
+                'Body': {
+                    'Html': {
+                        'Charset': 'UTF-8',
+                        'Data': body,
+                    },
+                },
+                'Subject': {
+                    'Charset': 'UTF-8',
+                    'Data': "AWS Startup details -Not from Orlando "+org_name,
+                },
+            },
+            Source='info@genesesofts.com'
+        )
+    except Exception as e:
+        return "Unable to Process operation. Please contact Genese Administration at support@genese.com.np"
+    
+    
+    
+    try:
+        client.put_item(
+            TableName="startup-clients-details",
+            Item={
+                'domain_email':{'S':domain_email},
+                'Org_name':{'S':org_name},
+                'Contact_person_name':{'S':contact_person_name},
+                'Contact_number':{'S':contact_number},
+                'Designation':{'S':designation},
+                'Website':{'S':website},
+                'Ml_used':{'S':ml_used},
+                'Launch_date':{'S':launch_date},
+                'Product_list':{'SS':product_list},
+                'Employee_sizes':{'S':employee_size},
+                'Description':{'S':description},
+                'Founded_date':{'S':founded_date},
+                'Industry_type':{'S':industry_type},
+                'Target_customers':{'S':target_customers}
+                
+            }
+        )
+    except:
+        return "Email Sent Successfully to the Genese Team"
+    
+    return "Thankyou for applying AWS Startup. We will get back to your shortly"
+    
+    
+    #, Item={'ID':{'S':randomInteger}, TableName='email_message',

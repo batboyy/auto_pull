@@ -1,0 +1,68 @@
+print('Loading event')
+import json
+import boto3
+import json
+
+
+sns = boto3.client('sns')
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('SESNotifications')
+
+
+
+def lambda_handler(event, context):
+    print(json.dumps(event, separators=(',', ':')))
+    
+    SnsPublishTime = event['Records'][0]['Sns']['Timestamp'].split("T")[0]
+    #SnsPublishTime = event['Records'][0]['Sns']['Timestamp']
+    SESMessage = event['Records'][0]['Sns']['Message']  
+    SESMessage1 = json.loads(SESMessage)
+    SESMessageType = SESMessage1['eventType']
+    SESMessageId = SESMessage1['mail']['messageId']
+    SESSenderAddress=SESMessage1['mail']['source']
+    SESDestinationAddress = SESMessage1['mail']['destination'][0]
+    print(SESDestinationAddress)
+    SESeventtype = SESMessage1['eventType']
+    
+    
+    print(SESeventtype)
+    if SESMessageType == 'Delivery':
+        b = {'SESMessageId':SESMessageId,
+        'SnsPublishTime':SnsPublishTime,
+        'SESSenderAddress':SESSenderAddress,
+        'SESDestinationAddress':SESDestinationAddress, 
+        'SESMessageType': SESMessageType}
+        try:
+            response = table.put_item(Item=b)
+            print('data inserted for delivery')
+        except :
+            print('Error in delivery')
+    elif SESMessageType == 'Bounce':
+        bouncetype = SESMessage1['bounce']['bounceType']
+        bouncesubtype = SESMessage1['bounce']['bounceSubType']
+        b = {'SESMessageId':SESMessageId,
+        'SnsPublishTime':SnsPublishTime,
+        'SESSenderAddress':SESSenderAddress,
+        'SESDestinationAddress':SESDestinationAddress, 
+        'SESMessageType': SESMessageType,
+        'bounceType': bouncetype,
+        'bounceSubType': bouncesubtype
+        }
+        try:
+            response = table.put_item(Item=b)
+            print('data inserted for bounce')
+        except :
+            print('Error in bounce')
+            
+    elif SESMessageType == 'Complaint':
+        b = {'SESMessageId':SESMessageId,
+        'SnsPublishTime':SnsPublishTime,
+        'SESSenderAddress':SESSenderAddress,
+        'SESDestinationAddress':SESDestinationAddress, 
+        'SESMessageType': SESMessageType}
+        try:
+            response = table.put_item(Item=b)
+            print('data inserted for Complaint')
+        except :
+            print('Error in Complaint')
+			
